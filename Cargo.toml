@@ -1,0 +1,15 @@
+[package]
+name = "soft-aes-wasm"
+version = "0.1.0"
+edition = "2021"
+authors = ["David Schmid <david.schmid@mailbox.org>"]
+description = "A Wasm Interface for AES."
+repository = "https://github.com/5n00py/soft-aes-wasm"
+license = "GPL-3.0"
+
+[dependencies]
+soft-aes = "0.1.0"
+wasm-bindgen = "0.2"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
