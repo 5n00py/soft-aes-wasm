@@ -5,17 +5,23 @@ This project provides a WebAssembly (Wasm) interface for the
 library, allowing for AES encryption and decryption directly in web
 applications. It includes support for both AES ECB and AES CBC modes.
 
-**IMPORTANT: **  This implementation currently does not incorporate defenses
+**IMPORTANT:**  This implementation currently does not incorporate defenses
 against side-channel attacks. Consequently, Soft-AES is optimally positioned
 for educational purposes and non-critical application scenarios where such
 advanced protections are not a primary concern.
 
+## Table of Contents
+- [Installation with npm](#installation-with-npm)
+- [Building from Source](#building-from-source)
+- [Usage](#usage)
+- [Test](#test)
+- [License](#license)
+
 ## Installation with npm
 
-To use `soft-aes-wasm` in your web project, follow these steps:
+To integrate `soft-aes-wasm` in your web project using npm, follow these steps:
 
-1. Add the `soft-aes-wasm` package to your project. If you're using npm, you
-   can do this by running:
+1. Add the `soft-aes-wasm` package to your project:
 
    ```sh 
    npm install soft-aes-wasm
@@ -34,6 +40,17 @@ To use `soft-aes-wasm` in your web project, follow these steps:
 
    run();
    ```
+
+## Building from Source
+
+If you want to build the Wasm module from the source, clone the repository and
+run `wasm-pack`:
+
+```sh
+git clone https://github.com/5n00py/soft-aes-wasm.git
+cd soft-aes-wasm
+wasm-pack build --target web
+```
 
 ## Usage
 
@@ -63,23 +80,13 @@ In the example above a 16-byte key is used to demonstrate AES-128. Changing the
 key length to 24 or 32 bytes will use AES-192 or AES-256 respectively. The IV
 for AES CBC must always be 16 bytes regardless of the AES variant.
 
-## Building from Source
-
-If you want to build the Wasm module from the source, clone the repository and
-run `wasm-pack`:
-
-```sh
-git clone https://github.com/5n00py/soft-aes-wasm.git
-cd soft-aes-wasm
-wasm-pack build --target web
-```
 
 ## Test
 
-To run tests, navigate to the `test` folder and start a local server:
+To run tests, clone the project form github and build from source as described
+above. Navigate to the `test` folder and start a local server, e.g.:
 
 ```sh
-cd test
 python3 -m http.server
 ```
 
