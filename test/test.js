@@ -3,6 +3,7 @@ import init, {
   wasm_aes_dec_ecb,
   wasm_aes_enc_cbc,
   wasm_aes_dec_cbc,
+  wasm_aes_cmac
 } from "../pkg/soft_aes_wasm.js";
 
 function appendOutput(message, outputId) {
@@ -11,9 +12,9 @@ function appendOutput(message, outputId) {
 }
 
 function byteArrayToHexString(byteArray) {
-    return Array.from(byteArray, byte => {
-        return ('0' + (byte & 0xFF).toString(16)).slice(-2).toUpperCase();
-    }).join(':');
+  return Array.from(byteArray, byte => {
+    return ('0' + (byte & 0xFF).toString(16)).slice(-2).toUpperCase();
+  }).join(':');
 }
 
 async function testAesEcb() {
@@ -23,7 +24,7 @@ async function testAesEcb() {
   appendOutput("Starting AES ECB Test", "output-ecb");
   try {
     const encrypted = wasm_aes_enc_ecb(plaintext, key, "PKCS7");
-	const encryptedHex = byteArrayToHexString(encrypted);
+    const encryptedHex = byteArrayToHexString(encrypted);
     appendOutput("Encrypted Data (ECB): " + encryptedHex, "output-ecb");
 
     const decrypted = wasm_aes_dec_ecb(encrypted, key, "PKCS7");
@@ -54,7 +55,7 @@ async function testAesCbc() {
   appendOutput("Starting AES CBC Test", "output-cbc");
   try {
     const encrypted = wasm_aes_enc_cbc(plaintext, key, iv, "PKCS7");
-	const encryptedHex = byteArrayToHexString(encrypted);
+    const encryptedHex = byteArrayToHexString(encrypted);
     appendOutput("Encrypted Data (CBC): " + encryptedHex, "output-cbc");
 
     const decrypted = wasm_aes_dec_cbc(encrypted, key, iv, "PKCS7");
@@ -77,10 +78,43 @@ async function testAesCbc() {
   }
 }
 
+async function testAesCmac() {
+  appendOutput("Starting AES CMAC Test", "output-cmac");
+
+  // Define the key and message in hexadecimal format
+  const keyHex = "2b7e151628aed2a6abf7158809cf4f3c";
+  const messageHex = "6bc1bee22e409f96e93d7e117393172a";
+
+  // Convert the hex strings to byte arrays
+  const key = Uint8Array.from(keyHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+  const message = Uint8Array.from(messageHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+
+ try {
+    const mac = await wasm_aes_cmac(message, key);
+    const macHex = byteArrayToHexString(mac);
+    appendOutput("MAC Data (CMAC): " + macHex, "output-cmac");
+
+    // Expected MAC in hexadecimal format
+    const expectedMacHex = "070a16b46b4d4144f79bdd9dd04a287c";
+
+    // Remove colons for comparison
+    const formattedMacHex = macHex.replace(/:/g, "").toLowerCase();
+
+    if (formattedMacHex === expectedMacHex) {
+      appendOutput("CMAC Test Passed: MAC matches the expected value.", "output-cmac");
+    } else {
+      appendOutput("CMAC Test Failed: MAC does not match the expected value.", "output-cmac");
+    }
+  } catch (error) {
+    appendOutput("CMAC Test Error: " + error, "output-cmac");
+  }
+}
+
 async function run() {
   await init();
   await testAesEcb();
   await testAesCbc();
+  await testAesCmac();
 }
 
 run();
