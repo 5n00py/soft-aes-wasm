@@ -1,4 +1,4 @@
-use soft_aes::aes::{aes_dec_cbc, aes_dec_ecb, aes_enc_cbc, aes_enc_ecb};
+use soft_aes::aes::{aes_cmac, aes_dec_cbc, aes_dec_ecb, aes_enc_cbc, aes_enc_ecb};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -52,5 +52,19 @@ pub fn wasm_aes_dec_cbc(
     let iv_array: [u8; 16] = iv.try_into().unwrap_or_else(|_| [0u8; 16]);
     let padding_str = padding.as_deref();
     aes_dec_cbc(&ciphertext, &key, &iv_array, padding_str)
+        .map_err(|e| JsValue::from_str(&e.to_string()))
+}
+
+#[wasm_bindgen]
+pub fn wasm_aes_cmac(message: Vec<u8>, key: Vec<u8>) -> Result<Vec<u8>, JsValue> {
+    // Ensure key is the correct size (16 bytes for AES-128)
+    if key.len() != 16 {
+        return Err(JsValue::from_str("Key must be 16 bytes long"));
+    }
+
+    let result = aes_cmac(&message, &key);
+
+    result
+        .map(|mac| mac.to_vec())
         .map_err(|e| JsValue::from_str(&e.to_string()))
 }
