@@ -57,11 +57,6 @@ pub fn wasm_aes_dec_cbc(
 
 #[wasm_bindgen]
 pub fn wasm_aes_cmac(message: Vec<u8>, key: Vec<u8>) -> Result<Vec<u8>, JsValue> {
-    // Ensure key is the correct size (16 bytes for AES-128)
-    if key.len() != 16 {
-        return Err(JsValue::from_str("Key must be 16 bytes long"));
-    }
-
     let result = aes_cmac(&message, &key);
 
     result
